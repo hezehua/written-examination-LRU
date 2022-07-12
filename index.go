@@ -1,5 +1,7 @@
 package LRU
 
+import "fmt"
+
 //实现一个缓存Cache， 缓存Cache会在其已满时驱逐最近最少使用的数据
 //例如：
 //缓存大小 ： Size 3
@@ -24,8 +26,13 @@ type cacheNode struct {
 	next *cacheNode
 }
 
+type data struct {
+	key string
+	val string
+}
+
 //设置缓存
-func (l *LRU) set(key, val string) bool {
+func (l *LRU) put(key, val string) bool {
 	if l.cap == 0 {
 		return false
 	}
@@ -76,6 +83,26 @@ func (l *LRU) get(key string) (string, bool) {
 	l.cutNode(ret.point)
 	l.inertToHead(ret.point)
 	return ret.val, true
+}
+
+func (l *LRU) showAll() (dataList []data) {
+	dataList = make([]data, 0)
+	node := l.cacheLinkHead
+	for {
+		if node == nil {
+			break
+		}
+		dataList = append(dataList, data{
+			key: node.key,
+			val: l.data[node.key].val,
+		})
+		fmt.Println(node.key, l.data[node.key].val)
+		if node == l.cacheLinkTail {
+			break
+		}
+		node = node.next
+	}
+	return
 }
 
 //插入到头部
